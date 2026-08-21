@@ -1,0 +1,9 @@
+node_modules
+.next
+data
+.env
+.env*.local
+*.zip
+.git
+debug-*.mts
+drizzle/meta

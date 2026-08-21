@@ -1,0 +1,34 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: charkheh
+      POSTGRES_PASSWORD: change-me-in-production
+      POSTGRES_DB: charkheh_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U charkheh -d charkheh_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://charkheh:change-me-in-production@db:5432/charkheh_db
+    env_file:
+      - .env  # بقیه متغیرها (BALE_BOT_TOKEN, ...) از این فایل
+    volumes:
+      - uploads:/app/data/uploads/bale
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  uploads:
